@@ -1,2 +1,2 @@
-# rmt
-This is the code repository for the Random Matrix Theory project
+# Random Matrix Theory - Broadening Project
+...more coming soon...
