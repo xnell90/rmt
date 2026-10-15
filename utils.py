@@ -2,7 +2,9 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.linalg as la
+
 import torch
+from torch.utils.data import DataLoader, TensorDataset
 
 def generate_random_normal(p, n):
     return np.random.normal(0, 1, size=(p, n))
@@ -44,6 +46,20 @@ def generate_plot(matrix):
     plt.show()
 
 # ------------------------------------------------------------------------------------------
+def generate_random_loader():
+    X_train = torch.randn(1000, 20)
+    y_train = torch.randint(0, 2, (1000, 1)).float()
+
+    X_test = torch.randn(200, 20)
+    y_test = torch.randint(0, 2, (200, 1)).float()
+
+    train_dataset = TensorDataset(X_train, y_train)
+    test_dataset = TensorDataset(X_test, y_test)
+
+    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+
+    return train_loader, test_loader
 
 def train_model(model, train_loader, criterion, optimizer, device, epochs=5):
     model.train()
@@ -64,6 +80,7 @@ def train_model(model, train_loader, criterion, optimizer, device, epochs=5):
             running_loss += loss.item() * inputs.size(0)
             
         epoch_loss = running_loss / len(train_loader.dataset)
+
         print(f"Epoch {epoch+1}/{epochs} - Loss: {epoch_loss:.4f}")
 
 def test_model(model, test_loader, criterion, device):
@@ -84,11 +101,5 @@ def test_model(model, test_loader, criterion, device):
             
     avg_loss = test_loss / len(test_loader.dataset)
     accuracy = (correct / len(test_loader.dataset)) * 100
+
     print(f"\nTest Results - Loss: {avg_loss:.4f}, Accuracy: {accuracy:.2f}%")
-
-if __name__ == "__main__":
-    matrix1 = generate_random_normal(1000, 2000) # p <= n
-    matrix2 = generate_random_normal(2000, 1000) # p > n
-
-    generate_plot(matrix1)
-    generate_plot(matrix2)
