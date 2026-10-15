@@ -2,6 +2,7 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.linalg as la
+import torch
 
 def generate_random_normal(p, n):
     return np.random.normal(0, 1, size=(p, n))
@@ -41,6 +42,49 @@ def generate_plot(matrix):
         plt.plot(0, point_mass, "ro", markersize=8)
 
     plt.show()
+
+# ------------------------------------------------------------------------------------------
+
+def train_model(model, train_loader, criterion, optimizer, device, epochs=5):
+    model.train()
+    
+    for epoch in range(epochs):
+        running_loss = 0.0
+        for inputs, targets in train_loader:
+            inputs, targets = inputs.to(device), targets.to(device)
+            
+            optimizer.zero_grad()
+            
+            outputs = model(inputs)
+            loss = criterion(outputs, targets)
+            
+            loss.backward()
+            optimizer.step()
+            
+            running_loss += loss.item() * inputs.size(0)
+            
+        epoch_loss = running_loss / len(train_loader.dataset)
+        print(f"Epoch {epoch+1}/{epochs} - Loss: {epoch_loss:.4f}")
+
+def test_model(model, test_loader, criterion, device):
+    model.eval()
+    test_loss = 0.0
+    correct = 0
+    
+    with torch.no_grad():
+        for inputs, targets in test_loader:
+            inputs, targets = inputs.to(device), targets.to(device)
+            
+            outputs = model(inputs)
+            loss = criterion(outputs, targets)
+            test_loss += loss.item() * inputs.size(0)
+            
+            predictions = (outputs >= 0.5).float()
+            correct += (predictions == targets).sum().item()
+            
+    avg_loss = test_loss / len(test_loader.dataset)
+    accuracy = (correct / len(test_loader.dataset)) * 100
+    print(f"\nTest Results - Loss: {avg_loss:.4f}, Accuracy: {accuracy:.2f}%")
 
 if __name__ == "__main__":
     matrix1 = generate_random_normal(1000, 2000) # p <= n
