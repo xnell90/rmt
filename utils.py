@@ -80,8 +80,9 @@ def train_model(model, train_loader, criterion, optimizer, device, epochs=5):
             running_loss += loss.item() * inputs.size(0)
             
         epoch_loss = running_loss / len(train_loader.dataset)
-
         print(f"Epoch {epoch+1}/{epochs} - Loss: {epoch_loss:.4f}")
+        
+    return model
 
 def test_model(model, test_loader, criterion, device):
     model.eval()
