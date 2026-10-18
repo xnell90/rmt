@@ -13,8 +13,12 @@ class MNISTClassifier:
         self.batch_size = batch_size
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model = model.to(self.device)
+        self.losses = []
         
     def fit(self, X, y):
+        self.model.train()
+        self.losses = []
+        
         X_tensor = torch.tensor(X, dtype=torch.float32)
         y_tensor = torch.tensor(y)
                 
@@ -24,16 +28,24 @@ class MNISTClassifier:
         dataset = TensorDataset(X_tensor, y_tensor)
         dataloader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
         
-        self.model.train()
         for epoch in range(self.epochs):
+            batch_losses = []
+            
             for batch_X, batch_y in dataloader:
                 batch_X, batch_y = batch_X.to(self.device), batch_y.to(self.device)
                 
                 optimizer.zero_grad()
                 outputs = self.model(batch_X)
                 loss = criterion(outputs, batch_y)
+
+                batch_loss = loss.item()
+                batch_losses.append(batch_loss)
+                
                 loss.backward()
                 optimizer.step()
+
+            avg_loss = sum(batch_losses) / len(batch_losses)
+            self.losses.append(avg_loss)
                 
         return self
 
