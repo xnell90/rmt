@@ -13,39 +13,77 @@ class MNISTClassifier:
         self.batch_size = batch_size
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model = model.to(self.device)
-        self.losses = []
+        self.train_losses = []
+        self.val_losses = []
         
-    def fit(self, X, y):
-        self.model.train()
-        self.losses = []
+    def fit(self, X, y, val_perc=10):
+        num_rows = int(X.shape[0] * (val_perc / 100))
         
-        X_tensor = torch.tensor(X, dtype=torch.float32)
-        y_tensor = torch.tensor(y)
-                
+        # Prepare Train Dataset
+        self.train_losses = []
+        
+        X_train = X[:-num_rows]
+        y_train = y[:-num_rows]
+
+        X_train_tensor = torch.tensor(X_train, dtype=torch.float32)
+        y_train_tensor = torch.tensor(y_train)
+
+        train_dataset = TensorDataset(X_train_tensor, y_train_tensor)
+        train_dataloader = DataLoader(train_dataset, batch_size=self.batch_size, shuffle=True)
+
+        # Prepare Validation Dataset
+        self.val_losses = []
+        
+        X_val = X[-num_rows:]
+        y_val = y[-num_rows:]
+
+        X_val_tensor = torch.tensor(X_val, dtype=torch.float32)
+        y_val_tensor = torch.tensor(y_val)
+
+        val_dataset = TensorDataset(X_val_tensor, y_val_tensor)
+        val_dataloader = DataLoader(val_dataset, batch_size=self.batch_size, shuffle=True)
+
+        # Define Criterion and Optimizer
         criterion = nn.CrossEntropyLoss()
         optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
         
-        dataset = TensorDataset(X_tensor, y_tensor)
-        dataloader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
-        
         for epoch in range(self.epochs):
-            batch_losses = []
+            # Training Phase ------------------------------------------------------
+            self.model.train()
             
-            for batch_X, batch_y in dataloader:
+            train_batch_losses = []
+            for batch_X, batch_y in train_dataloader:
                 batch_X, batch_y = batch_X.to(self.device), batch_y.to(self.device)
-                
                 optimizer.zero_grad()
+                
                 outputs = self.model(batch_X)
                 loss = criterion(outputs, batch_y)
 
-                batch_loss = loss.item()
-                batch_losses.append(batch_loss)
+                train_batch_loss = loss.item()
+                train_batch_losses.append(train_batch_loss)
                 
                 loss.backward()
                 optimizer.step()
 
-            avg_loss = sum(batch_losses) / len(batch_losses)
-            self.losses.append(avg_loss)
+            train_avg_loss = sum(train_batch_losses) / len(train_batch_losses)
+            self.train_losses.append(train_avg_loss)
+
+            #Validation Phase ------------------------------------------------------
+            self.model.eval()
+
+            val_batch_losses = []
+            with torch.no_grad():
+                for batch_X, batch_y in val_dataloader:
+                    batch_X, batch_y = batch_X.to(self.device), batch_y.to(self.device)
+                    
+                    outputs = self.model(batch_X)
+                    loss = criterion(outputs, batch_y)
+                
+                    val_batch_loss = loss.item()
+                    val_batch_losses.append(val_batch_loss)
+
+            val_avg_loss = sum(val_batch_losses) / len(val_batch_losses)
+            self.val_losses.append(val_avg_loss)
                 
         return self
 
