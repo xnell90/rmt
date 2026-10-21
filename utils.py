@@ -24,8 +24,8 @@ def compute_marchenko_pastur(q, sigma_squared, step=1000):
 
     return point_mass, x_values, y_values
         
-# The helper function below creates the histogram of the singular values of a matrix and 
-# the marchenko pastur distribution on the same plot.
+# generate_plot creates the histogram of the singular values of a matrix and  the fitted marchenko 
+# pastur distribution on the same plot.
 
 def generate_plot(matrix):
     singular_values = compute_singular_values(matrix)
@@ -41,25 +41,27 @@ def generate_plot(matrix):
     if point_mass:
         height = max(counts)
         plt.vlines(0, 0, height, color="red")
-        plt.plot(0, height, "ro", markersize=8)
+        plt.plot(0, height, "ro", markersize=4)
 
         plt.text(
-            0.02, 
+            0.0, 
             height, 
             f"Point Mass: {point_mass:.3f}", 
             color="red", 
-            weight="bold", 
             ha="left"
         )
 
     plt.show()
+    plt.clf()
 
 #----------------------------------------------------------------------------------------
 def display_digit(mnist, index):
     array = mnist.iloc[index, mnist.columns[1:]].to_numpy().reshape(28, 28)
     plt.imshow(array, cmap='gray')
-    plt.axis('off') 
+    plt.axis('off')
+    
     plt.show()
+    plt.clf()
 
 def display_losses(train_losses, val_losses, title='', y_label='Cross Entropy Loss', x_label="Epochs"):
     plt.plot([i + 1 for i in range(len(train_losses))], train_losses, label='Train')
@@ -70,6 +72,7 @@ def display_losses(train_losses, val_losses, title='', y_label='Cross Entropy Lo
     plt.legend()
 
     plt.show()
+    plt.clf()
 
 def display_confusion_matrix(actuals, predictions):
     ConfusionMatrixDisplay.from_predictions(
@@ -80,5 +83,24 @@ def display_confusion_matrix(actuals, predictions):
     )
 
     plt.title("Confusion Matrix from Predictions")
+    
     plt.show()
+    plt.clf()
+
+# analyze_weight_matrix looks at the weight matrices in the neural network model, and it plots out
+# a historgram of the singular values of the shuffled weight matrix and the fitted marchenko pastur
+# distribution on the same plot
+
+def analyze_weight_matrices(model):
+    for name, param in model.named_parameters():
+        
+        if 'weight' in name:
+            print(f"Layer: {name} | Shape: {param.shape}")
+            weight_matrix = param.data.cpu().numpy()
+
+            arr = weight_matrix.flatten()
+            np.random.shuffle(arr)
+            shuffled = arr.reshape(weight_matrix.shape)
+        
+            generate_plot(shuffled)
     
