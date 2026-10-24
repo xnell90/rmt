@@ -66,7 +66,7 @@ def display_digit(mnist, index):
 def display_losses(train_losses, val_losses, title='', y_label='Cross Entropy Loss', x_label="Epochs"):
     plt.plot([i + 1 for i in range(len(train_losses))], train_losses, label='Train')
     plt.plot([i + 1 for i in range(len(val_losses))], val_losses, label='Validation')
-    plt.xticks(range(0, len(train_losses), 1))
+    plt.xticks(range(0, len(train_losses), 10), rotation=90)
     plt.xlabel("Epochs")
     plt.ylabel("Cross Entropy Loss")
     plt.legend()
