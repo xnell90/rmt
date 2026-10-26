@@ -22,7 +22,7 @@ def compute_marchenko_pastur(q, sigma_squared, step=1000):
 
     point_mass = 1.0 - q if q < 1 else None
 
-    return point_mass, x_values, y_values
+    return point_mass, x_values, y_values, a_plus
         
 # generate_plot creates the histogram of the singular values of a matrix and  the fitted marchenko 
 # pastur distribution on the same plot.
@@ -35,11 +35,13 @@ def generate_plot(matrix):
     q = n / m
     sigma_squared = np.var(matrix)
     
-    point_mass, x_values, y_values = compute_marchenko_pastur(q, sigma_squared)
+    point_mass, x_values, y_values, a_plus = compute_marchenko_pastur(q, sigma_squared)
     plt.plot(x_values, y_values, color='red')
 
+    height = max(counts)
+    plt.vlines(a_plus + n ** (- 2 / 3), 0 , height, color="orange")
+
     if point_mass:
-        height = max(counts)
         plt.vlines(0, 0, height, color="red")
         plt.plot(0, height, "ro", markersize=4)
 
@@ -66,7 +68,10 @@ def display_digit(mnist, index):
 def display_losses(train_losses, val_losses, title='', y_label='Cross Entropy Loss', x_label="Epochs"):
     plt.plot([i + 1 for i in range(len(train_losses))], train_losses, label='Train')
     plt.plot([i + 1 for i in range(len(val_losses))], val_losses, label='Validation')
-    plt.xticks(range(0, len(train_losses), 10), rotation=90)
+
+    increment = 1 if len(train_losses) < 10 else 10
+    
+    plt.xticks(range(0, len(train_losses), increment), rotation=90)
     plt.xlabel("Epochs")
     plt.ylabel("Cross Entropy Loss")
     plt.legend()
