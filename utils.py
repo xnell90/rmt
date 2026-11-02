@@ -70,6 +70,7 @@ def display_losses(train_losses, val_losses, title='', y_label='Cross Entropy Lo
     plt.plot([i + 1 for i in range(len(val_losses))], val_losses, label='Validation')
 
     increment = 1 if len(train_losses) < 10 else 10
+    #increment = 100
     
     plt.xticks(range(0, len(train_losses), increment), rotation=90)
     plt.xlabel("Epochs")
@@ -98,7 +99,6 @@ def display_confusion_matrix(actuals, predictions):
 
 def analyze_weight_matrices(model):
     for name, param in model.named_parameters():
-        
         if 'weight' in name:
             print(f"Layer: {name} | Shape: {param.shape}")
             weight_matrix = param.data.cpu().numpy()
