@@ -39,7 +39,9 @@ def generate_plot(matrix):
     plt.plot(x_values, y_values, color='red')
 
     height = max(counts)
-    plt.vlines(a_plus + n ** (- 2 / 3), 0 , height, color="orange")
+
+    delta = sigma_squared * ((1 + q ** (-1/2)) ** (4/3)) * (q ** (-1/2)) * (m ** (-2/3))
+    plt.vlines(a_plus + delta, 0 , height, color="orange")
 
     if point_mass:
         plt.vlines(0, 0, height, color="red")
@@ -66,13 +68,19 @@ def display_digit(mnist, index):
     plt.clf()
 
 def display_losses(train_losses, val_losses, title='', y_label='Cross Entropy Loss', x_label="Epochs"):
-    plt.plot([i + 1 for i in range(len(train_losses))], train_losses, label='Train')
+    epochs = len(train_losses)
+    
+    plt.plot([i + 1 for i in range(epochs)], train_losses, label='Train')
     plt.plot([i + 1 for i in range(len(val_losses))], val_losses, label='Validation')
 
-    increment = 1 if len(train_losses) < 10 else 10
-    #increment = 100
+    if epochs < 10:
+        increment = 1
+    elif 100 <= epochs < 1000:
+        increment = 10
+    else:
+        increment = 100
     
-    plt.xticks(range(0, len(train_losses), increment), rotation=90)
+    plt.xticks(range(0, epochs, increment), rotation=90)
     plt.xlabel("Epochs")
     plt.ylabel("Cross Entropy Loss")
     plt.legend()
@@ -107,5 +115,5 @@ def analyze_weight_matrices(model):
             np.random.shuffle(arr)
             shuffled = arr.reshape(weight_matrix.shape)
         
-            generate_plot(shuffled)
+            generate_plot(shuffled - np.mean(shuffled))
     
