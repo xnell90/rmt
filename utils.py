@@ -81,14 +81,15 @@ def display_losses(train_losses, val_losses, title='', y_label='Cross Entropy Lo
         increment = 100
     
     plt.xticks(range(0, epochs, increment), rotation=90)
-    plt.xlabel("Epochs")
-    plt.ylabel("Cross Entropy Loss")
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+    plt.title(title)
     plt.legend()
 
     plt.show()
     plt.clf()
 
-def display_confusion_matrix(actuals, predictions):
+def display_confusion_matrix(actuals, predictions, title="Confusion Matrix from Predictions"):
     ConfusionMatrixDisplay.from_predictions(
         actuals, 
         predictions, 
@@ -96,7 +97,7 @@ def display_confusion_matrix(actuals, predictions):
         cmap=plt.cm.Blues
     )
 
-    plt.title("Confusion Matrix from Predictions")
+    plt.title(title)
     
     plt.show()
     plt.clf()
