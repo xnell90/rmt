@@ -2,6 +2,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 import scipy.linalg as la
+
 from sklearn.metrics import ConfusionMatrixDisplay
 
 def generate_random_normal(n, m):
@@ -77,8 +78,10 @@ def display_losses(train_losses, val_losses, title='', y_label='Cross Entropy Lo
         increment = 1
     elif 100 <= epochs < 1000:
         increment = 10
-    else:
+    elif 1000 <= epochs < 3000:
         increment = 100
+    else:
+        increment = 1000
     
     plt.xticks(range(0, epochs, increment), rotation=90)
     plt.xlabel(x_label)
