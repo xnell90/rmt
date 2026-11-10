@@ -116,5 +116,5 @@ def analyze_weight_matrices(model):
             np.random.shuffle(arr)
             shuffled = arr.reshape(weight_matrix.shape)
         
-            generate_plot(shuffled - np.mean(shuffled))
+            generate_plot(shuffled)
     
