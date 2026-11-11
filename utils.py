@@ -25,7 +25,7 @@ def compute_marchenko_pastur(q, sigma_squared, step=1000):
 
     return point_mass, x_values, y_values, a_plus
         
-# generate_plot creates the histogram of the singular values of a matrix and  the fitted marchenko 
+# generate_plot creates the histogram of the singular values of a matrix and the fitted marchenko 
 # pastur distribution on the same plot.
 
 def generate_plot(matrix):

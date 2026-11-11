@@ -4,6 +4,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 
 import numpy as np
+from tqdm import tqdm
 
 
 class MNISTClassifier:
@@ -17,7 +18,7 @@ class MNISTClassifier:
         self.train_losses = []
         self.val_losses = []
         
-    def fit(self, X, y, val_perc=10):
+    def fit(self, X, y, val_perc=10, show_progress=False):
         num_rows = int(X.shape[0] * (val_perc / 100))
         
         # Prepare Train Dataset
@@ -48,7 +49,7 @@ class MNISTClassifier:
         criterion = nn.CrossEntropyLoss()
         optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
         
-        for epoch in range(self.epochs):
+        for epoch in tqdm(range(self.epochs), disable=(not show_progress)):
             # Training Phase ------------------------------------------------------
             self.model.train()
             
