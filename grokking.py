@@ -14,8 +14,8 @@ BATCH_SIZE = 200
 LR = 1e-3
 WEIGHT_DECAY = 0.01       # Crucial driver for grokking
 INIT_SCALE = 8.0          # Large initialization delays generalization
-STEPS = 40000             # Total optimization steps
-LOG_INTERVAL = 500
+STEPS = 100000             # Total optimization steps
+LOG_INTERVAL = 1000
 
 torch.manual_seed(SEED)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -66,11 +66,13 @@ def evaluate(loader):
     model.eval()
     correct = 0
     total = 0
+
     for x, y in loader:
         x, y = x.to(device), y.to(device)
         preds = model(x).argmax(dim=1)
         correct += (preds == y).sum().item()
         total += y.size(0)
+
     return correct / total
 
 def get_weight_norm(model):
