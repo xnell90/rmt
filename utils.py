@@ -81,7 +81,7 @@ def display_losses(train_losses, val_losses, title='', y_label='Cross Entropy Lo
     elif 1000 <= epochs < 3000:
         increment = 100
     else:
-        increment = 1000
+        increment = 10000
     
     plt.xticks(range(0, epochs, increment), rotation=90)
     plt.xlabel(x_label)
