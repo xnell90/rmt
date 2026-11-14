@@ -42,7 +42,8 @@ def generate_plot(matrix):
     height = max(counts)
 
     delta = sigma_squared * ((1 + q ** (-1/2)) ** (4/3)) * (q ** (-1/2)) * (m ** (-2/3))
-    plt.vlines(a_plus + delta, 0 , height, color="orange")
+    threshold = a_plus + delta
+    plt.vlines(threshold, 0 , height, color="orange")
 
     if point_mass:
         plt.vlines(0, 0, height, color="red")
@@ -55,6 +56,13 @@ def generate_plot(matrix):
             color="red", 
             ha="left"
         )
+
+    trap_count = 0
+    for singular_value in singular_values:
+        if singular_value > threshold:
+            trap_count += 1
+
+    print("Trap Count:", trap_count)
 
     plt.show()
     plt.clf()
