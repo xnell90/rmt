@@ -123,9 +123,9 @@ def analyze_weight_matrices(model):
             print(f"Layer: {name} | Shape: {param.shape}")
             weight_matrix = param.data.cpu().numpy()
 
-            arr = weight_matrix.flatten()
-            np.random.shuffle(arr)
-            shuffled = arr.reshape(weight_matrix.shape)
+            array = weight_matrix.flatten()
+            np.random.shuffle(array)
+            shuffled = array.reshape(weight_matrix.shape)
         
             generate_plot(shuffled)
     
